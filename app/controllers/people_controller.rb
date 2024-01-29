@@ -16,11 +16,10 @@ class PeopleController < ApplicationController
     person_params = params.require(:person).permit(:first_name, :last_name)
 
     person = Person.create(person_params)
+
+    status = person.persisted? ? 200 : 422
+    json = People::Serializer.new(person).as_json
     
-    if person.persisted?
-      render status: 200, json: {id: person.id, name: person.name}
-    else
-      render status: 422, json: person.errors
-    end
+    render status: status, json: json
   end
 end
