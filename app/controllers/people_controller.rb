@@ -15,9 +15,12 @@ class PeopleController < ApplicationController
   def create
     person_params = params.require(:person).permit(:first_name, :last_name)
 
-    person = Person.create(person_params)
+    persisted, person = Person::Create.call(
+      first_name: person_params[:first_name],
+      last_name: person_params[:last_name]
+    )
 
-    status = person.persisted? ? 200 : 422
+    status = persisted ? 200 : 422
     json = People::Serializer.new(person).as_json
     
     render status: status, json: json
